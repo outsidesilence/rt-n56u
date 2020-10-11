@@ -95,6 +95,8 @@ echo "prefetch-domain no" >> $SMARTDNS_CONF
 fi
 if [ $sdns_exp -eq 1 ];then
 echo "serve-expired yes" >> $SMARTDNS_CONF
+echo "serve-expired-ttl 0" >> $SMARTDNS_CONF
+echo "serve-expired-reply-ttl 30" >> $SMARTDNS_CONF
 else
 echo "serve-expired no" >> $SMARTDNS_CONF
 fi
