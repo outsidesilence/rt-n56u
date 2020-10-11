@@ -77,11 +77,16 @@ echo "server-name $snds_name" >> $SMARTDNS_CONF
 	fi
 gensdnssecond
 echo "cache-size $snds_cache" >> $SMARTDNS_CONF
+echo "cache-persist yes" >> $SMARTDNS_CONF
+echo "cache-file /tmp/smartdns.cache" >> $SMARTDNS_CONF
 if [ $snds_ip_change -eq 1 ];then
 echo "dualstack-ip-selection yes" >> $SMARTDNS_CONF
 echo "dualstack-ip-selection-threshold $(nvram get snds_ip_change_time)" >> $SMARTDNS_CONF
+fi
 if [ $snds_ipv6 -eq 1 ];then
 echo "force-AAAA-SOA yes" >> $SMARTDNS_CONF
+else
+echo "force-AAAA-SOA no" >> $SMARTDNS_CONF
 fi
 if [ $sdns_www -eq 1 ];then
 echo "prefetch-domain yes" >> $SMARTDNS_CONF
@@ -93,7 +98,7 @@ echo "serve-expired yes" >> $SMARTDNS_CONF
 else
 echo "serve-expired no" >> $SMARTDNS_CONF
 fi
-echo "log-level info" >> $SMARTDNS_CONF
+echo "log-level error" >> $SMARTDNS_CONF
 listnum=`nvram get sdnss_staticnum_x`
 for i in $(seq 1 $listnum)
 do
