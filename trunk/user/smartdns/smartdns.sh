@@ -14,7 +14,7 @@ sdns_port=`nvram get sdns_port`
 sdns_tcp_server=`nvram get sdns_tcp_server`
 sdns_ipv6_server=`nvram get sdns_ipv6_server`
 snds_ip_change=`nvram get snds_ip_change`
-snds_ipv6=`nvram get snds_ipv6`
+sdns_ipv6=`nvram get sdns_ipv6`
 sdns_www=`nvram get sdns_www`
 sdns_exp=`nvram get sdns_exp`
 snds_redirect=`nvram get snds_redirect`
@@ -79,14 +79,19 @@ gensdnssecond
 echo "cache-size $snds_cache" >> $SMARTDNS_CONF
 echo "cache-persist yes" >> $SMARTDNS_CONF
 echo "cache-file /tmp/smartdns.cache" >> $SMARTDNS_CONF
+
+echo "rr-ttl $sdns_ttl" >> $SMARTDNS_CONF
+echo "rr-ttl-min $sdns_ttl_min" >> $SMARTDNS_CONF
+echo "rr-ttl-max $sdns_ttl_max" >> $SMARTDNS_CONF
+
 if [ $snds_ip_change -eq 1 ];then
 echo "dualstack-ip-selection yes" >> $SMARTDNS_CONF
 echo "dualstack-ip-selection-threshold $(nvram get snds_ip_change_time)" >> $SMARTDNS_CONF
 fi
-if [ $snds_ipv6 -eq 1 ];then
+if [ $sdns_ipv6 -eq 1 ];then
 echo "force-AAAA-SOA yes" >> $SMARTDNS_CONF
 else
-echo "force-AAAA-SOA yes" >> $SMARTDNS_CONF
+echo "force-AAAA-SOA no" >> $SMARTDNS_CONF
 fi
 if [ $sdns_www -eq 1 ];then
 echo "prefetch-domain yes" >> $SMARTDNS_CONF
@@ -100,7 +105,8 @@ echo "serve-expired-reply-ttl 30" >> $SMARTDNS_CONF
 else
 echo "serve-expired no" >> $SMARTDNS_CONF
 fi
-echo "log-level error" >> $SMARTDNS_CONF
+echo "log-level warn" >> $SMARTDNS_CONF
+echo "log-file /tmp/smartdns.log" >> $SMARTDNS_CONF
 listnum=`nvram get sdnss_staticnum_x`
 for i in $(seq 1 $listnum)
 do
@@ -289,6 +295,8 @@ clear_iptable()
 
 start_smartdns(){
 rm -f /tmp/sdnsipset.conf
+touch /tmp/smartdns.cache
+touch /tmp/smartdns.log
 args=""
 logger -t "SmartDNS" "创建配置文件."
 ipset -N smartdns hash:net 2>/dev/null
